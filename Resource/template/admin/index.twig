@@ -1,0 +1,175 @@
+{% extends '@admin/default_frame.twig' %}
+
+{% set menus = ['tpsbooking', 'tpsbooking_index'] %}
+
+{% block title %}{{ 'admin.tpsbooking.menu_title'|trans }}{% endblock %}
+{% block sub_title %}{{ 'admin.tpsbooking.booking_list'|trans }}{% endblock %}
+
+{# {% form_theme form '@admin/Form/bootstrap_4_horizontal_layout.html.twig' %} #}
+
+{% block stylesheet %}
+    <style type="text/css">
+        .list-group-item:hover {
+            z-index: inherit;
+        }
+        #confirmModal.confirm .cancel,
+        #confirmModal.confirm .modal-footer .btn-danger {
+            display: none;
+        }
+        #confirmModal.cancel .confirm,
+        #confirmModal.cancel .modal-footer .btn-primary {
+            display: none;
+        }
+    </style>
+{% endblock stylesheet %}
+{% block javascript %}
+    <script src="{{ asset('TPSBooking/assets/js/jquery.mask.min.js', 'plugin') }}"></script>
+    <script src="{{ asset('assets/js/vendor/jquery.ui/jquery.ui.core.min.js', 'admin') }}"></script>
+    <script src="{{ asset('assets/js/vendor/jquery.ui/jquery.ui.widget.min.js', 'admin') }}"></script>
+    <script src="{{ asset('assets/js/vendor/jquery.ui/jquery.ui.mouse.min.js', 'admin') }}"></script>
+    <script src="{{ asset('assets/js/vendor/jquery.ui/jquery.ui.sortable.min.js', 'admin') }}"></script>
+    <script type="text/javascript">
+        $(function() {
+            $('.btn-confirm, .btn-cancel').click(function() {
+                var action = $(this).data('action');
+                var id = $(this).data('id');
+                var readonly = action == 'cancel' ? true : false;
+                $('#confirmModal').removeClass('confirm');
+                $('#confirmModal').removeClass('cancel');
+                $('#confirmModal').addClass(action);
+                $('#confirmModal input').attr('readonly', readonly);
+                $('#confirmModal select').attr('readonly', readonly);
+                $('#confirmModal').attr('d-id', id);
+                $('#confirmModal').modal('show');
+            })
+            $('#confirmModal').on('show.bs.modal', function() {
+                var id = $(this).attr('d-id');
+                $.get('{{ url('tpsbooking_admin_booking_info') }}?id=' + id.toString(), function(res) {
+                    $('#date').val(res.date);
+                    $('#time').val(res.time);
+                    $('#email').val(res.email);
+                    $('#phone_number').val(res.phone_number);
+                    $('#product').val(res.product_id);
+                    $('#product').change();
+                })
+            })
+            $('#date').mask('00-00-0000', {placeholder: "00-00-0000"});
+            $('#time').mask('00:00', {placeholder: "00:00"});
+        })
+    </script>
+{% endblock %}
+
+{% block main %}
+    <div class="c-contentsArea__cols">
+        <div class="c-contentsArea__primaryCol">
+            <div class="card rounded border-0 mb-4 d-block">
+                <div class="card-body p-0">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th class="border-top-0 pt-2 pb-3 pl-3 text-nowrap">{{ 'admin.tpsbooking.id'|trans }}</th>
+                            <th class="border-top-0 pt-2 pb-3">{{ 'front.tpsbooking.str.date'|trans }}</th>
+                            <th class="border-top-0 pt-2 pb-3">{{ 'front.tpsbooking.str.service'|trans }}</th>
+                            <th class="border-top-0 pt-2 pb-3">{{ 'front.tpsbooking.str.email'|trans }}</th>
+                            <th class="border-top-0 pt-2 pb-3">{{ 'front.tpsbooking.str.phone_number'|trans }}</th>
+                            <th class="border-top-0 pt-2 pb-3">{{ 'front.tpsbooking.str.created_at'|trans }}</th>
+                            <th class="border-top-0 pt-2 pb-3">{{ 'admin.tpsbooking.status'|trans }}</th>
+                            <th class="border-top-0 pt-2 pb-3">{{ 'admin.tpsbooking.action'|trans }}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for booking in bookings %}
+                            <tr id="ex-customer-{{ booking.id }}">
+                                <td class="align-middle pl-3">{{ booking.id }}</td>
+                                <td class="align-middle">{{ booking.datetime | date('d-m-Y') }}</td>
+                                <td class="align-middle">{{ booking.Product.name }}</td>
+                                <td class="align-middle">{{ booking.email }}</td>
+                                <td class="align-middle">{{ booking.phonenumber }}</td>
+                                <td class="align-middle">{{ booking.createdate | date('d-m-Y H:i:s') }}</td>
+                                <td class="align-middle">{{ ('admin.tpsbooking.status_' ~ booking.status) | trans}}</td>
+                                <td class="align-middle">
+                                    {% if booking.status == 'new' %}
+                                    <button class="btn btn-primary btn-confirm" data-action="confirm" data-id="{{ booking.id }}">{{'admin.tpsbooking.action.confirm' | trans}}</button>
+                                    <button class="btn btn-danger btn-cancel" data-action="cancel" data-id="{{ booking.id }}">{{'admin.tpsbooking.action.cancel' | trans}}</button>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="confirmModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <form action="{{ url('tpsbooking_admin_booking_confirm') }}" method="POST" >
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                <div class="modal-header  modal-primary">
+                    <h4 class="modal-title">{{ 'admin.tpsbooking.confirm_modal_title' | trans }}</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <input type="hidden" class="form-control" id="id" name="id">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>{{ 'front.tpsbooking.str.date' | trans}}</label>
+                                <input type="text" class="form-control datepicker" id="date" name="date">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>{{ 'front.tpsbooking.str.time' | trans}}</label>
+                                <input type="text" class="form-control" id="time" name="time">
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label>{{ 'front.tpsbooking.str.service' | trans}}</label>
+                                <select type="text" class="form-control" id="product" name="product">
+                                    {% set services = repository('Eccube\\Entity\\Product').findAll() %}
+                                    {% for service in services %}
+                                        <option value="{{service.id}}" >{{service.name}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label>{{ 'front.tpsbooking.str.email' | trans}}</label>
+                                <input type="text" class="form-control" id="email" name="email">
+                            </div>
+                        </div>
+                            <div class="col-md-12">
+                            <div class="form-group">
+                                <label>{{ 'front.tpsbooking.str.phone_number' | trans}}</label>
+                                <input type="text" class="form-control" id="phone_number" name="phone_number">
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="confirm">{{ 'front.tpsbooking.str.note' | trans}}</label>
+                                <label class="cancel">{{ 'front.tpsbooking.str.reason' | trans}}</label>
+                                <textarea rows="5" type="text" class="form-control" id="note" name="note"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="sendMailToCustomer" checked="checked" value="1">
+                                <label class="form-check-label" for="sendMailToCustomer">{{ 'admin.tpsbooking.send_email_to_customer' | trans}}</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-danger">{{ 'admin.tpsbooking.action.cancel' | trans }}</button>
+                    <button class="btn btn-primary">{{ 'admin.tpsbooking.action.confirm' | trans }}</button>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

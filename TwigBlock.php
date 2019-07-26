@@ -1,6 +1,6 @@
 <?php
 
-namespace Plugin\TPS;
+namespace Plugin\TPSBooking;
 
 use Eccube\Common\EccubeTwigBlock;
 

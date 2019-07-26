@@ -1,6 +1,6 @@
 <?php
 
-namespace Plugin\TPS;
+namespace Plugin\TPSBooking;
 
 use Eccube\Common\EccubeNav;
 
@@ -11,6 +11,17 @@ class Nav implements EccubeNav
      */
     public static function getNav()
     {
-        return [];
+        return [
+            'tpsbooking' => [
+                'name' => 'admin.tpsbooking.menu_title',
+                'icon' => 'fa-calendar',
+                'children' => [
+                    'tpsbooking_index' => [
+                        'name' => 'admin.tpsbooking.booking_list',
+                        'url' => 'tpsbooking_admin_booking',
+                    ],
+                ],
+            ]
+        ];
     }
 }

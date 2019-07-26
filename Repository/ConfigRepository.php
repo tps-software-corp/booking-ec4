@@ -1,9 +1,9 @@
 <?php
 
-namespace Plugin\TPS\Repository;
+namespace Plugin\TPSBooking\Repository;
 
 use Eccube\Repository\AbstractRepository;
-use Plugin\TPS\Entity\Config;
+use Plugin\TPSBooking\Entity\Config;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**

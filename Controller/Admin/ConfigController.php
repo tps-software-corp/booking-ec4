@@ -1,10 +1,10 @@
 <?php
 
-namespace Plugin\TPS\Controller\Admin;
+namespace Plugin\TPSBooking\Controller\Admin;
 
 use Eccube\Controller\AbstractController;
-use Plugin\TPS\Form\Type\Admin\ConfigType;
-use Plugin\TPS\Repository\ConfigRepository;
+use Plugin\TPSBooking\Form\Type\Admin\ConfigType;
+use Plugin\TPSBooking\Repository\ConfigRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
