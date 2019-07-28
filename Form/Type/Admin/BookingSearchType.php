@@ -39,6 +39,12 @@ class BookingSearchType extends AbstractType
             ->add('booking_time', DateType::class, [
                 'label' => 'admin.tpsbooking.booking_time',
                 'required' => false,
+                'input' => 'datetime',
+                'widget' => 'single_text',
+                'format' => 'dd-MM-yyyy',
+                'attr' => [
+                    'data-toggle' => 'datepicker',
+                ],
             ])
             ->add('status_new', CheckboxType::class, [
                 'label' => 'admin.tpsbooking.status_new',

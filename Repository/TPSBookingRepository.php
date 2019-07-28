@@ -45,7 +45,6 @@ class TPSBookingRepository extends AbstractRepository
         }
         if (isset($searchData['booking_time'])) {
             $date = $searchData['booking_time'];
-            $dateQuery = $date->format('Y-m-d');
             $qb
                 ->orWhere('b.datetime BETWEEN :dateMin AND :dateMax')
                 ->setParameter('dateMin', $date->format('Y-m-d 00:00:00'))
@@ -66,7 +65,6 @@ class TPSBookingRepository extends AbstractRepository
                 ->orWhere('b.status = :status')
                 ->setParameter('status', TPSBooking::STATUS_CANCELLED);
         }
-
         $qb->orderBy('b.datetime', 'DESC')
             ->getQuery();
         return $qb;

@@ -86,7 +86,7 @@
                     </div>
                     <div class="col-3">
                         <div class="mb-2">
-                            <label class="col-form-label" title="{{ 'tooltip.tpsbooking.date'|trans }}">{{ 'admin.tpsbooking.date'|trans }}</label>
+                            <label class="col-form-label" title="{{ 'tooltip.tpsbooking.status'|trans }}">{{ 'admin.tpsbooking.status'|trans }}</label>
                             {{ form_widget(searchForm.status_new) }}
                             {{ form_widget(searchForm.status_confirmed) }}
                             {{ form_widget(searchForm.status_cancelled) }}
@@ -95,6 +95,7 @@
                 </div>
             </div>
             <div class="c-outsideBlock__contents mb-5">
+                <a href={{url('tpsbooking_admin_booking')}} class="btn btn-info px-5 float-right">{{ 'admin.common.clear_search'|trans }}</a>
                 <button type="submit" class="btn btn-ec-conversion px-5">{{ 'admin.common.search'|trans }}</button>
                 {% if pagination %}
                     <span class="font-weight-bold ml-2">{{ 'admin.common.search_result'|trans({'%count%':pagination.totalItemCount}) }}</span>
