@@ -5,6 +5,7 @@ admin.tpsbooking.action.confirm: "Xác nhận"
 admin.tpsbooking.action.cancel: "Huỷ lịch hẹn"
 admin.tpsbooking.id: "ID"
 admin.tpsbooking.datetime: "Ngày giờ"
+admin.tpsbooking.datetime: "Ngày đặt hẹn"
 admin.tpsbooking.people_num: "Số người"
 admin.tpsbooking.status: "Trạng thái"
 admin.tpsbooking.status_new: "Mới"
@@ -13,6 +14,8 @@ admin.tpsbooking.status_cancelled: "Đã huỷ"
 admin.tpsbooking.confirm_modal_title: "Xác nhận lịch hẹn"
 admin.tpsbooking.cancel_modal_title: "Huỷ lịch hẹn"
 admin.tpsbooking.send_email_to_customer: "Gửi email xác nhận cho khách hàng"
+admin.tpsbooking.multi_search_label: "Email / Số ĐT khách hàng"
+
 
 front.tpsbooking.menu.services: "Dịch vụ"
 front.tpsbooking.str.make_a_reservation: "Đặt lịch hẹn"
@@ -33,3 +36,5 @@ front.tpsbooking.message.email_is_required: "Xin vui lòng điền Email liên h
 front.tpsbooking.message.phone_number_is_required: "Xin vui lòng điền SĐT liên hệ để đặt lịch hẹn!"
 
 common.services.title: "Tất cả dịch vụ"
+
+tooltip.tpsbooking.multi_search_label: "Email / Số ĐT khách hàng"

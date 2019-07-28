@@ -28,9 +28,48 @@ class TPSBookingRepository extends AbstractRepository
     {
         $bookings = $this->createQueryBuilder('b')
             ->orderBy('b.datetime', 'DESC')
-            ->getQuery()
-            ->getResult();
+            ->getQuery();
         return $bookings;
+    }
+    public function getQueryBuilderBySearchData($searchData)
+    {
+        $qb = $this->createQueryBuilder('b');
+        if (isset($searchData['multi']) && $searchData['multi']) {
+            $multi = $searchData['multi'];
+            $qb
+                ->orWhere('b.email LIKE :email')
+                ->setParameter('email', '%'.$multi.'%');
+            $qb
+                ->orWhere('b.phone_number LIKE :phone_number')
+                ->setParameter('phone_number', '%'.$multi.'%');
+        }
+        if (isset($searchData['booking_time'])) {
+            $date = $searchData['booking_time'];
+            $dateQuery = $date->format('Y-m-d');
+            $qb
+                ->orWhere('b.datetime BETWEEN :dateMin AND :dateMax')
+                ->setParameter('dateMin', $date->format('Y-m-d 00:00:00'))
+                ->setParameter('dateMax', $date->format('Y-m-d 23:59:59'));
+        }
+        if (isset($searchData['status_new']) && $searchData['status_new']) {
+            $qb
+                ->orWhere('b.status = :status')
+                ->setParameter('status', TPSBooking::STATUS_NEW);
+        }
+        if (isset($searchData['status_confirmed']) && $searchData['status_confirmed']) {
+            $qb
+                ->orWhere('b.status = :status')
+                ->setParameter('status', TPSBooking::STATUS_CONFIRMED);
+        }
+        if (isset($searchData['status_cancelled']) && $searchData['status_cancelled']) {
+            $qb
+                ->orWhere('b.status = :status')
+                ->setParameter('status', TPSBooking::STATUS_CANCELLED);
+        }
+
+        $qb->orderBy('b.datetime', 'DESC')
+            ->getQuery();
+        return $qb;
     }
 
 }

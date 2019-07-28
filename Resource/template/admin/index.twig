@@ -40,13 +40,17 @@
                 $('#confirmModal input').attr('readonly', readonly);
                 $('#confirmModal select').attr('readonly', readonly);
                 $('#confirmModal').attr('d-id', id);
+                $('#confirmModal').attr('d-status', action);
                 $('#confirmModal').modal('show');
             })
             $('#confirmModal').on('show.bs.modal', function() {
                 var id = $(this).attr('d-id');
+                var status = $(this).attr('d-status');
                 $.get('{{ url('tpsbooking_admin_booking_info') }}?id=' + id.toString(), function(res) {
+                    $('#id').val(id);
                     $('#date').val(res.date);
                     $('#time').val(res.time);
+                    $('#status').val(status == 'confirm' ? 'confirmed' : 'cancelled');
                     $('#email').val(res.email);
                     $('#phone_number').val(res.phone_number);
                     $('#product').val(res.product_id);
@@ -60,6 +64,44 @@
 {% endblock %}
 
 {% block main %}
+
+    <form name="search_form" id="search_form" method="post" action="">
+        {{ form_widget(searchForm._token) }}
+        <div class="c-outsideBlock">
+            <div class="c-outsideBlock__contents">
+                <div class="row justify-content-start">
+                    <div class="col-4">
+                        <div class="mb-2">
+                            <label class="col-form-label" data-tooltip="true" data-placement="top" title="{{ 'tooltip.tpsbooking.multi_search_label'|trans }}">{{ 'admin.tpsbooking.multi_search_label'|trans }}<i class="fa fa-question-circle fa-lg ml-1"></i></label>
+                            {{ form_widget(searchForm.multi) }}
+                            {{ form_errors(searchForm.multi) }}
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="mb-2">
+                            <label class="col-form-label" title="{{ 'tooltip.tpsbooking.date'|trans }}">{{ 'admin.tpsbooking.date'|trans }}</label>
+                            {{ form_widget(searchForm.booking_time) }}
+                            {{ form_errors(searchForm.booking_time) }}
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="mb-2">
+                            <label class="col-form-label" title="{{ 'tooltip.tpsbooking.date'|trans }}">{{ 'admin.tpsbooking.date'|trans }}</label>
+                            {{ form_widget(searchForm.status_new) }}
+                            {{ form_widget(searchForm.status_confirmed) }}
+                            {{ form_widget(searchForm.status_cancelled) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="c-outsideBlock__contents mb-5">
+                <button type="submit" class="btn btn-ec-conversion px-5">{{ 'admin.common.search'|trans }}</button>
+                {% if pagination %}
+                    <span class="font-weight-bold ml-2">{{ 'admin.common.search_result'|trans({'%count%':pagination.totalItemCount}) }}</span>
+                {% endif %}
+            </div>
+        </div>
+    </form>
     <div class="c-contentsArea__cols">
         <div class="c-contentsArea__primaryCol">
             <div class="card rounded border-0 mb-4 d-block">
@@ -78,7 +120,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {% for booking in bookings %}
+                        {% for booking in pagination %}
                             <tr id="ex-customer-{{ booking.id }}">
                                 <td class="align-middle pl-3">{{ booking.id }}</td>
                                 <td class="align-middle">{{ booking.datetime | date('d-m-Y') }}</td>
@@ -99,6 +141,12 @@
                     </table>
                 </div>
             </div>
+
+            <div class="row justify-content-md-center mb-4">
+                {% if pagination.totalItemCount > 0 %}
+                    {% include "@admin/pager.twig" with { 'pages' : pagination.paginationData, 'routes' : 'tpsbooking_admin_booking' } %}
+                {% endif %}
+            </div>
         </div>
     </div>
     <div id="confirmModal" class="modal fade" role="dialog">
@@ -114,6 +162,7 @@
                 <div class="modal-body">
                     <div class="row">
                         <input type="hidden" class="form-control" id="id" name="id">
+                        <input type="hidden" class="form-control" id="status" name="status">
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>{{ 'front.tpsbooking.str.date' | trans}}</label>
@@ -129,7 +178,7 @@
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label>{{ 'front.tpsbooking.str.service' | trans}}</label>
-                                <select type="text" class="form-control" id="product" name="product">
+                                <select type="text" class="form-control" id="product" name="product_id">
                                     {% set services = repository('Eccube\\Entity\\Product').findAll() %}
                                     {% for service in services %}
                                         <option value="{{service.id}}" >{{service.name}}</option>
