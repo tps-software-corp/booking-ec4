@@ -1,4 +1,5 @@
 admin.common.clear_search: "Xoá bộ tìm kiếm"
+admin.common.update_success: "Cập nhật lịch hẹn thành công"
 
 admin.tpsbooking.menu_title: "Lịch hẹn"
 admin.tpsbooking.booking_list: "Tất cả"
@@ -9,7 +10,10 @@ admin.tpsbooking.id: "ID"
 admin.tpsbooking.datetime: "Ngày giờ"
 admin.tpsbooking.date: "Ngày đặt hẹn"
 admin.tpsbooking.people_num: "Số người"
+admin.tpsbooking.phone_number: "Số điện thoại"
 admin.tpsbooking.status: "Trạng thái"
+admin.tpsbooking.service: "Dịch vụ"
+admin.tpsbooking.note: "Ghi chú"
 admin.tpsbooking.status_new: "Mới"
 admin.tpsbooking.status_confirmed: "Đã xác nhận"
 admin.tpsbooking.status_cancelled: "Đã huỷ"
@@ -39,3 +43,17 @@ front.tpsbooking.message.phone_number_is_required: "Xin vui lòng điền SĐT l
 common.services.title: "Tất cả dịch vụ"
 
 tooltip.tpsbooking.multi_search_label: "Email / Số ĐT khách hàng"
+
+email.tpsbooking.titles.booking_new_title: "Lịch hẹn mới của bạn!"
+email.tpsbooking.titles.booking_new_message: "Thông tin chi chiết lịch hẹn của bạn"
+email.tpsbooking.messages.booking_new_help_text: "Lưu ý, đây là email thông báo lịch hẹn của bạn đã được gửi đến hệ thống. Xin vui lòng chờ chúng tôi xác nhận lịch hẹn của bạn trong thời gian sớm nhất."
+
+email.tpsbooking.titles.booking_confirm_title: "Lịch hẹn của bạn đã được xác nhận"
+email.tpsbooking.titles.booking_confirm_message: "Thông tin chi chiết lịch hẹn của bạn đã xác nhận"
+email.tpsbooking.messages.booking_confirm_help_text: "Cảm ơn bạn đã quan tâm đến dịch vụ của chúng tôi."
+
+email.tpsbooking.titles.booking_cancel_title: "Lịch hẹn của bạn đã được huỷ!"
+email.tpsbooking.titles.booking_cancel_message: "Thông tin lịch hẹn đã huỷ của bạn"
+email.tpsbooking.messages.booking_cancel_help_text: "Chúng tôi rất lấy làm tiếc vì điều này."
+
+email.tpsbooking.messages.booking_number: "Mã lịch hẹn"

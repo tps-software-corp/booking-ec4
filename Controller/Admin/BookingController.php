@@ -6,6 +6,8 @@ use Eccube\Controller\AbstractController;
 use Plugin\TPSBooking\Form\Type\Admin\ConfigType;
 use Plugin\TPSBooking\Form\Type\Admin\BookingSearchType;
 use Plugin\TPSBooking\Entity\TPSBooking;
+use Plugin\TPSBooking\Event;
+use Plugin\TPSBooking\Service\Mailservice as BookingMailService;
 use Plugin\TPSBooking\Repository\ConfigRepository;
 use Plugin\TPSBooking\Repository\TPSBookingRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -14,23 +16,26 @@ use Symfony\Component\Routing\Annotation\Route;
 use Knp\Component\Pager\PaginatorInterface;
 use Eccube\Repository\ProductRepository;
 use Eccube\Repository\CustomerRepository;
+use Eccube\Event\EventArgs;
 
 class BookingController extends AbstractController
 {
     private $configRepository;
     private $bookingRepository;
+    private $bookingMailService;
 
     /**
      * Constructor function
      *
      * @return void
      */
-    public function __construct(ConfigRepository $configRepository, TPSBookingRepository $bookingRepository, ProductRepository $productRepository, CustomerRepository $customerRepository)
+    public function __construct(ConfigRepository $configRepository, TPSBookingRepository $bookingRepository, ProductRepository $productRepository, CustomerRepository $customerRepository, BookingMailService $bookingMailService)
     {
         $this->configRepository = $configRepository;
         $this->bookingRepository = $bookingRepository;
         $this->productRepository = $productRepository;
         $this->customerRepository = $customerRepository;
+        $this->bookingMailService = $bookingMailService;
         $this->config = $configRepository->get();
     }
 
@@ -73,6 +78,7 @@ class BookingController extends AbstractController
             'id' => $booking->getId(),
             'status' => $booking->getStatus(),
             'datetime' => $booking->getDatetime(),
+            'note' => $booking->getNote(),
             'product_id' => $booking->getProduct()->getId(),
             'email' => $booking->getEmail(),
             'phone_number' => $booking->getPhoneNumber(),
@@ -104,6 +110,16 @@ class BookingController extends AbstractController
         }
         $this->entityManager->persist($booking);
         $this->entityManager->flush();
+        if ($data['sendmail'] == 1) {
+            $event = new EventArgs(
+                [
+                    'Booking' => $booking,
+                ],
+                $request
+            );
+            $this->eventDispatcher->dispatch(Event::TPSBOOKING_EVENT_BOOKING_UPDATED, $event);
+        }
+        $this->addSuccess('admin.common.update_success', 'admin');
         return $this->redirectToRoute('tpsbooking_admin_booking');
     }
 }

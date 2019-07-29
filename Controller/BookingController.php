@@ -5,12 +5,14 @@ namespace Plugin\TPSBooking\Controller;
 use Eccube\Controller\AbstractController;
 use Plugin\TPSBooking\Form\Type\Admin\ConfigType;
 use Plugin\TPSBooking\Entity\TPSBooking;
+use Plugin\TPSBooking\Event;
 use Plugin\TPSBooking\Repository\ConfigRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Eccube\Repository\ProductRepository;
 use Eccube\Repository\CustomerRepository;
+use Eccube\Event\EventArgs;
 
 class BookingController extends AbstractController
 {
@@ -54,19 +56,25 @@ class BookingController extends AbstractController
         ];
         $date = $request->get('date');
         $dateTime = \DateTime::createFromFormat('d/m/Y', $date);
-        $booking = new TPSBooking();
-        $booking->setStatus(TPSBooking::STATUS_NEW);
-        $booking->setDatetime($dateTime);
-        $booking->setProduct($this->productRepository->find($request->get('product_id')));
-        $booking->setEmail($request->get('email'));
-        $booking->setPhoneNumber($request->get('phone_number'));
-        $booking->setStatus(TPSBooking::STATUS_NEW);
+        $Booking = new TPSBooking();
+        $Booking->setStatus(TPSBooking::STATUS_NEW);
+        $Booking->setDatetime($dateTime);
+        $Booking->setProduct($this->productRepository->find($request->get('product_id')));
+        $Booking->setEmail($request->get('email'));
+        $Booking->setPhoneNumber($request->get('phone_number'));
+        $Booking->setStatus(TPSBooking::STATUS_NEW);
         if ($request->get('customer_id')) {
-            $booking->setCustomer($this->customerRepository->find($request->get('customer_id')));
+            $Booking->setCustomer($this->customerRepository->find($request->get('customer_id')));
         }
-        $this->entityManager->persist($booking);
+        $this->entityManager->persist($Booking);
         $this->entityManager->flush();
-        // $result['record'] = $booking;
+        $event = new EventArgs(
+            [
+                'Booking' => $Booking,
+            ],
+            $request
+        );
+        $this->eventDispatcher->dispatch(Event::TPSBOOKING_EVENT_BOOKING_CREATED, $event);
         $result['error'] = 0;
         return $this->json($result);
     }
